@@ -61,8 +61,7 @@ const loginFocused = ref(false)
 const passwordFocused = ref(false)
 const serverFocused = ref(false)
 
-const handleSubmit = (e: Event) => {
-  e.preventDefault()
+const handleSubmit = () => {
   router.push('/main')
 }
 </script>
