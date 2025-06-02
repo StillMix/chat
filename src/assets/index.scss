@@ -1,2 +1,14 @@
-@import './normalize.css';
-@import './styles.scss';
+@use './normalize.css';
+@use './styles.scss';
+:root {
+  --font-family: 'Inter', sans-serif;
+}
+
+* {
+  background: transparent;
+  outline: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
