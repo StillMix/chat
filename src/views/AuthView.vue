@@ -2,9 +2,9 @@
   <div class="login">
     <div class="login-popup">
       <p class="login-popup__text">Вход</p>
-      <form class="login-popup-form">
+      <form class="login-popup-form" @submit.prevent="handleSubmit">
         <label class="login-popup-form-label">
-          <span class="login-popup-form-label__title" :class="{ active: loginFocused || login }">
+          <span class="login-popup-form-label__title" :class="{ active: loginFocused }">
             Логин
           </span>
           <input
@@ -16,10 +16,7 @@
         </label>
 
         <label class="login-popup-form-label">
-          <span
-            class="login-popup-form-label__title"
-            :class="{ active: passwordFocused || password }"
-          >
+          <span class="login-popup-form-label__title" :class="{ active: passwordFocused }">
             Пароль
           </span>
           <input
@@ -32,7 +29,7 @@
         </label>
 
         <label class="login-popup-form-label">
-          <span class="login-popup-form-label__title" :class="{ active: serverFocused || server }">
+          <span class="login-popup-form-label__title" :class="{ active: serverFocused }">
             Сервер
           </span>
           <input
@@ -52,6 +49,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const login = ref('')
 const password = ref('')
@@ -60,6 +60,11 @@ const server = ref('')
 const loginFocused = ref(false)
 const passwordFocused = ref(false)
 const serverFocused = ref(false)
+
+const handleSubmit = (e: Event) => {
+  e.preventDefault()
+  router.push('/main')
+}
 </script>
 
 <style lang="scss" scoped>
