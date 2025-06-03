@@ -23,12 +23,7 @@
       </label>
     </div>
     <div class="leftMenu-cards">
-      <div
-        class="leftMenu-cards-card"
-        v-for="item in filteredChats"
-        :key="item.id"
-        :class="{ active: item.isActive }"
-      >
+      <div class="leftMenu-cards-card" v-for="item in filteredChats" :key="item.id">
         <div class="leftMenu-cards-card__img"></div>
         <div class="leftMenu-cards-card-mess">
           <p class="leftMenu-cards-card-mess__name">{{ item.name }}</p>

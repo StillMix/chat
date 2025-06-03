@@ -39,7 +39,6 @@ export const chatList: ChatItem[] = [
     name: 'Вадим',
     lastMessage: 'Круто!',
     time: 'Пт',
-    isActive: true,
     isYourMessage: true,
   },
   {
