@@ -1,8 +1,8 @@
 <template>
-  <div class="RightChat__noactive" v-if="0 > 1">
+  <div class="RightChat__noactive" v-if="!selectedChatId">
     <p class="RightChat__noactive__title">Выберите чат чтобы отправить сообщение</p>
   </div>
-  <div class="RightChat">
+  <div class="RightChat" v-else>
     <div class="RightChat-header">
       <div class="RightChat-header__img"></div>
       <div class="RightChat-header__name">Здесь имя</div>
@@ -11,40 +11,35 @@
       </button>
     </div>
     <div class="RightChat-chat">
-      <div class="RightChat-chat-day">
-        <p class="RightChat-chat-day__time">19 июня 2025</p>
+      <div class="RightChat-chat-day" v-for="day in messagesData" :key="day.date">
+        <p class="RightChat-chat-day__time">{{ day.date }}</p>
         <div class="RightChat-chat-day-mess">
           <div
-            class="RightChat-chat-day-mess-your"
-            style="margin-top: если сверху чужое сообщение то отступ 30px если свое то 15px"
+            v-for="(message, index) in day.messages"
+            :key="message.id"
+            :class="getMessageClass(message)"
+            :style="getMessageStyle(message, day.messages, index)"
           >
-            <p class="RightChat-chat-day-mess-your__text">
-              Привет! Смотри, тут всплыл интересный кусок лунной космической истории — НАСА в
-              какой-то момент попросила Хассельблад адаптировать модель SWC для полетов на Луну.
-              Сейчас мы все знаем что астронавты летали с моделью 500 EL — и к слову говоря, все
-              тушки этих камер все еще находятся на поверхности Луны, так как астронавты с собой
-              забрали только кассеты с пленкой. Хассельблад в итоге адаптировал SWC для космоса, но
-              что-то пошло не так и на ракету они так никогда и не попали. Всего их было произведено
-              25 штук, одну из них недавно продали на аукционе за 45000 евро.
-            </p>
-            <p class="RightChat-chat-day-mess-your__time">11:56</p>
-          </div>
-          <div
-            class="RightChat-chat-day-mess-yourimg"
-            style="margin-top: если сверху чужое сообщение то отступ 30px если свое то 15px"
-          >
-            <img class="RightChat-chat-day-mess-yourimg__img" src="../assets/imgforexample.png" />
-            <p class="RightChat-chat-day-mess-yourimg__timeimg">11:56</p>
-          </div>
-          <div
-            class="RightChat-chat-day-mess-my"
-            style="margin-top: если сверху чужое сообщение то отступ 30px если свое то 15px"
-          >
-            <p class="RightChat-chat-day-mess-my__text">Круто!</p>
-            <div class="RightChat-chat-day-mess-my-times">
-              <MessageSendIcon :width="9" :height="4" color="#3369F3" />
-              <p class="RightChat-chat-day-mess-my-times__time">11:56</p>
-            </div>
+            <!-- Текстовое сообщение чужое -->
+            <template v-if="message.type === 'text' && !message.isMy">
+              <p class="RightChat-chat-day-mess-your__text">{{ message.text }}</p>
+              <p class="RightChat-chat-day-mess-your__time">{{ message.time }}</p>
+            </template>
+
+            <!-- Изображение чужое -->
+            <template v-if="message.type === 'image' && !message.isMy">
+              <img class="RightChat-chat-day-mess-yourimg__img" :src="message.image" />
+              <p class="RightChat-chat-day-mess-yourimg__timeimg">{{ message.time }}</p>
+            </template>
+
+            <!-- Текстовое сообщение мое -->
+            <template v-if="message.type === 'text' && message.isMy">
+              <p class="RightChat-chat-day-mess-my__text">{{ message.text }}</p>
+              <div class="RightChat-chat-day-mess-my-times">
+                <MessageSendIcon :width="9" :height="4" color="#3369F3" />
+                <p class="RightChat-chat-day-mess-my-times__time">{{ message.time }}</p>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -60,12 +55,47 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
+import { ref } from 'vue'
 import BtnSend from '@/assets/Icons/BtnSend.vue'
 import MenuIcon from '@/assets/Icons/MenuIcon.vue'
 import MessageSendIcon from '@/assets/Icons/MessageSendIcon.vue'
 import MessFile from '@/assets/Icons/MessFile.vue'
+import { messagesData, type MessageItem } from '@/Utils/MessageArray'
+
+// Состояние выбранного чата (null = чат не выбран)
+const selectedChatId = ref<string | number | null>(1) // Для демонстрации ставим 1, в реальности это будет null изначально
+
+// Функция для определения класса сообщения
+const getMessageClass = (message: MessageItem) => {
+  if (message.type === 'text' && !message.isMy) {
+    return 'RightChat-chat-day-mess-your'
+  }
+  if (message.type === 'image' && !message.isMy) {
+    return 'RightChat-chat-day-mess-yourimg'
+  }
+  if (message.type === 'text' && message.isMy) {
+    return 'RightChat-chat-day-mess-my'
+  }
+  return ''
+}
+
+// Функция для определения отступов сообщения
+const getMessageStyle = (message: MessageItem, messages: MessageItem[], index: number) => {
+  if (index === 0) {
+    return { marginTop: '30px' }
+  }
+
+  const prevMessage = messages[index - 1]
+  const isDifferentSender = message.isMy !== prevMessage.isMy
+
+  return {
+    marginTop: isDifferentSender ? '30px' : '10px',
+  }
+}
 </script>
+
 <style lang="scss" scoped>
 .RightChat {
   width: 100%;
@@ -117,6 +147,13 @@ import MessFile from '@/assets/Icons/MessFile.vue'
   &-chat {
     height: 100%;
     width: 929px;
+    padding-bottom: 20px;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+    }
+    scrollbar-width: none;
     &-day {
       width: 100%;
       margin-top: 50px;
@@ -132,6 +169,7 @@ import MessFile from '@/assets/Icons/MessFile.vue'
       &-mess {
         &-your {
           max-width: 402px;
+          width: fit-content;
           padding: 11px;
           background: #f8f8f8;
           border-radius: 20px;
@@ -142,6 +180,7 @@ import MessFile from '@/assets/Icons/MessFile.vue'
             font-size: 12px;
             line-height: 125%;
             color: #1e1e1e;
+            padding-right: 40px;
           }
           &__time {
             font-family: var(--font-family);
@@ -163,7 +202,9 @@ import MessFile from '@/assets/Icons/MessFile.vue'
           position: relative;
           overflow: hidden;
           &__img {
-            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
           }
           &__timeimg {
             position: absolute;
@@ -186,6 +227,7 @@ import MessFile from '@/assets/Icons/MessFile.vue'
         }
         &-my {
           max-width: 402px;
+          width: fit-content;
           padding: 11px;
           background: #e4edfd;
           border-radius: 20px;
@@ -198,6 +240,7 @@ import MessFile from '@/assets/Icons/MessFile.vue'
             font-size: 12px;
             line-height: 125%;
             color: #1e1e1e;
+            padding-right: 40px;
           }
           &-times {
             display: flex;
