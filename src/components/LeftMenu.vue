@@ -1,9 +1,9 @@
 <template>
   <div class="leftMenu">
     <div class="leftMenu-header">
-      <button class="leftMenu-header__btn" type="button">
+      <router-link to="/profile" class="leftMenu-header__btn">
         Профиль <ProfileArrow :width="6" :height="10" color="#999" />
-      </button>
+      </router-link>
       <label class="leftMenu-header-label">
         <SearchIcon
           class="leftMenu-header-label__icon"
@@ -116,6 +116,7 @@ const selectChat = (chat: ChatItem) => {
     border-bottom: 1px solid #eaeaea;
 
     &__btn {
+      text-decoration: none;
       width: 66px;
       height: 12px;
       display: flex;
