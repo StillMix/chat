@@ -2,62 +2,65 @@
   <div class="RightChat__noactive" v-if="!selectedChatId">
     <p class="RightChat__noactive__title">Выберите чат чтобы отправить сообщение</p>
   </div>
-  <div class="RightChat" v-else>
-    <div class="RightChat-header">
-      <div class="RightChat-header__img"></div>
-      <div class="RightChat-header__name">{{ selectedChatName }}</div>
-      <button class="RightChat-header__menu">
-        <MenuIcon :width="3" :height="16" color="#1E1E1E" />
-      </button>
-    </div>
-    <div class="RightChat-chat">
-      <div class="RightChat-chat-day" v-for="day in messagesData" :key="day.date">
-        <p class="RightChat-chat-day__time">{{ day.date }}</p>
-        <div class="RightChat-chat-day-mess">
-          <div
-            v-for="(message, index) in day.messages"
-            :key="message.id"
-            :class="getMessageClass(message)"
-            :style="getMessageStyle(message, day.messages, index)"
-          >
-            <!-- Текстовое сообщение чужое -->
-            <template v-if="message.type === 'text' && !message.isMy">
-              <p class="RightChat-chat-day-mess-your__text">{{ message.text }}</p>
-              <p class="RightChat-chat-day-mess-your__time">{{ message.time }}</p>
-            </template>
+  <transition name="chat-appear">
+    <div class="RightChat" v-if="selectedChatId">
+      <div class="RightChat-header">
+        <div class="RightChat-header__img"></div>
+        <div class="RightChat-header__name">{{ selectedChatName }}</div>
+        <button class="RightChat-header__menu">
+          <MenuIcon :width="3" :height="16" color="#1E1E1E" />
+        </button>
+      </div>
+      <div class="RightChat-chat">
+        <div class="RightChat-chat-day" v-for="day in messagesData" :key="day.date">
+          <p class="RightChat-chat-day__time">{{ day.date }}</p>
+          <div class="RightChat-chat-day-mess">
+            <div
+              v-for="(message, index) in day.messages"
+              :key="message.id"
+              :class="getMessageClass(message)"
+              :style="getMessageStyle(message, day.messages, index)"
+            >
+              <!-- Текстовое сообщение чужое -->
+              <template v-if="message.type === 'text' && !message.isMy">
+                <p class="RightChat-chat-day-mess-your__text">{{ message.text }}</p>
+                <p class="RightChat-chat-day-mess-your__time">{{ message.time }}</p>
+              </template>
 
-            <!-- Изображение чужое -->
-            <template v-if="message.type === 'image' && !message.isMy">
-              <img class="RightChat-chat-day-mess-yourimg__img" :src="message.image" />
-              <p class="RightChat-chat-day-mess-yourimg__timeimg">{{ message.time }}</p>
-            </template>
+              <!-- Изображение чужое -->
+              <template v-if="message.type === 'image' && !message.isMy">
+                <img class="RightChat-chat-day-mess-yourimg__img" :src="message.image" />
+                <p class="RightChat-chat-day-mess-yourimg__timeimg">{{ message.time }}</p>
+              </template>
 
-            <!-- Текстовое сообщение мое -->
-            <template v-if="message.type === 'text' && message.isMy">
-              <p class="RightChat-chat-day-mess-my__text">{{ message.text }}</p>
-              <div class="RightChat-chat-day-mess-my-times">
-                <MessageSendIcon :width="9" :height="4" color="#3369F3" />
-                <p class="RightChat-chat-day-mess-my-times__time">{{ message.time }}</p>
-              </div>
-            </template>
+              <!-- Текстовое сообщение мое -->
+              <template v-if="message.type === 'text' && message.isMy">
+                <p class="RightChat-chat-day-mess-my__text">{{ message.text }}</p>
+                <div class="RightChat-chat-day-mess-my-times">
+                  <MessageSendIcon :width="9" :height="4" color="#3369F3" />
+                  <p class="RightChat-chat-day-mess-my-times__time">{{ message.time }}</p>
+                </div>
+              </template>
+            </div>
           </div>
         </div>
       </div>
+      <div class="RightChat-footer" @click="handleFooterClick">
+        <FIlePopup v-if="isFilePopupOpen" @close="closeFilePopup" />
+        <button class="RightChat-footer__btn" @click.stop="toggleFilePopup">
+          <MessFile width="32" height="32" :color="isFilePopupOpen ? '#3369F3' : '#999999'" />
+        </button>
+        <input placeholder="Сообщение" class="RightChat-footer__input" />
+        <button class="RightChat-footer__btnsend">
+          <BtnSend width="28" height="28" color="#3369F3" />
+        </button>
+      </div>
     </div>
-    <div class="RightChat-footer">
-      <FIlePopup />
-      <button class="RightChat-footer__btn">
-        <MessFile width="32" height="32" color="#999999" />
-      </button>
-      <input placeholder="Сообщение" class="RightChat-footer__input" />
-      <button class="RightChat-footer__btnsend">
-        <BtnSend width="28" height="28" color="#3369F3" />
-      </button>
-    </div>
-  </div>
+  </transition>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import BtnSend from '@/assets/Icons/BtnSend.vue'
 import MenuIcon from '@/assets/Icons/MenuIcon.vue'
 import MessageSendIcon from '@/assets/Icons/MessageSendIcon.vue'
@@ -70,6 +73,22 @@ interface Props {
   selectedChatName?: string
 }
 defineProps<Props>()
+
+const isFilePopupOpen = ref(false)
+
+const toggleFilePopup = () => {
+  isFilePopupOpen.value = !isFilePopupOpen.value
+}
+
+const closeFilePopup = () => {
+  isFilePopupOpen.value = false
+}
+
+const handleFooterClick = () => {
+  if (isFilePopupOpen.value) {
+    closeFilePopup()
+  }
+}
 
 const getMessageClass = (message: MessageItem) => {
   if (message.type === 'text' && !message.isMy) {
@@ -99,6 +118,20 @@ const getMessageStyle = (message: MessageItem, messages: MessageItem[], index: n
 </script>
 
 <style lang="scss" scoped>
+.chat-appear-enter-active {
+  transition: all 0.3s ease;
+}
+
+.chat-appear-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.chat-appear-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 .RightChat {
   width: 100%;
   height: 100%;
