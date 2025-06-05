@@ -5,7 +5,7 @@
   <div class="RightChat" v-else>
     <div class="RightChat-header">
       <div class="RightChat-header__img"></div>
-      <div class="RightChat-header__name">Здесь имя</div>
+      <div class="RightChat-header__name">{{ selectedChatName }}</div>
       <button class="RightChat-header__menu">
         <MenuIcon :width="3" :height="16" color="#1E1E1E" />
       </button>
@@ -57,15 +57,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import BtnSend from '@/assets/Icons/BtnSend.vue'
 import MenuIcon from '@/assets/Icons/MenuIcon.vue'
 import MessageSendIcon from '@/assets/Icons/MessageSendIcon.vue'
 import MessFile from '@/assets/Icons/MessFile.vue'
 import { messagesData, type MessageItem } from '@/Utils/MessageArray'
 
-// Состояние выбранного чата (null = чат не выбран)
-const selectedChatId = ref<string | number | null>(1) // Для демонстрации ставим 1, в реальности это будет null изначально
+interface Props {
+  selectedChatId?: string | number | null
+  selectedChatName?: string
+}
+defineProps<Props>()
 
 // Функция для определения класса сообщения
 const getMessageClass = (message: MessageItem) => {

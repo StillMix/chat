@@ -23,7 +23,13 @@
       </label>
     </div>
     <div class="leftMenu-cards">
-      <div class="leftMenu-cards-card" v-for="item in filteredChats" :key="item.id">
+      <div
+        class="leftMenu-cards-card"
+        :class="{ active: selectedChatId === item.id }"
+        v-for="item in filteredChats"
+        :key="item.id"
+        @click="selectChat(item)"
+      >
         <div class="leftMenu-cards-card__img"></div>
         <div class="leftMenu-cards-card-mess">
           <p class="leftMenu-cards-card-mess__name">{{ item.name }}</p>
@@ -50,7 +56,18 @@
 import { ref, computed } from 'vue'
 import ProfileArrow from '@/assets/Icons/ProfileArrow.vue'
 import SearchIcon from '@/assets/Icons/SearchIcon.vue'
-import { chatList } from '@/Utils/ChatArray'
+import { chatList, type ChatItem } from '@/Utils/ChatArray'
+
+interface Props {
+  selectedChatId?: string | number | null
+}
+
+interface Emits {
+  (e: 'selectChat', chat: ChatItem): void
+}
+
+defineProps<Props>()
+const emit = defineEmits<Emits>()
 
 const searchValue = ref('')
 const isFocused = ref(false)
@@ -74,6 +91,10 @@ const handleFocus = () => {
 
 const handleBlur = () => {
   isFocused.value = false
+}
+
+const selectChat = (chat: ChatItem) => {
+  emit('selectChat', chat)
 }
 </script>
 
