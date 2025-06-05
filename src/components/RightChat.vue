@@ -46,9 +46,15 @@
         </div>
       </div>
       <div class="RightChat-footer" @click="handleFooterClick">
-        <FIlePopup v-if="isFilePopupOpen" @close="closeFilePopup" />
-        <button class="RightChat-footer__btn" @click.stop="toggleFilePopup">
-          <MessFile width="32" height="32" :color="isFilePopupOpen ? '#3369F3' : '#999999'" />
+        <transition name="file-popup">
+          <FIlePopup v-if="isFilePopupOpen" @close="closeFilePopup" />
+        </transition>
+        <button
+          class="RightChat-footer__btn"
+          :class="{ active: isFilePopupOpen }"
+          @click.stop="toggleFilePopup"
+        >
+          <MessFile width="32" height="32" color="#999999" />
         </button>
         <input placeholder="Сообщение" class="RightChat-footer__input" />
         <button class="RightChat-footer__btnsend">
@@ -130,6 +136,28 @@ const getMessageStyle = (message: MessageItem, messages: MessageItem[], index: n
 .chat-appear-enter-to {
   opacity: 1;
   transform: translateX(0);
+}
+
+// Анимация для FilePopup
+.file-popup-enter-active,
+.file-popup-leave-active {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.file-popup-enter-from {
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+}
+
+.file-popup-leave-to {
+  opacity: 0;
+  transform: translateY(-5px) scale(1.02);
+}
+
+.file-popup-enter-to,
+.file-popup-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 .RightChat {
@@ -313,6 +341,62 @@ const getMessageStyle = (message: MessageItem, messages: MessageItem[], index: n
     align-items: center;
     border-top: 1px solid #eaeaea;
     justify-content: space-between;
+
+    &__btn {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      transition: all 0.4s ease;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        background-size: 200% 200%;
+        border-radius: 50%;
+        opacity: 0;
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: gradientShift 3s ease-in-out infinite;
+      }
+
+      &:hover::before {
+        opacity: 0.1;
+      }
+
+      &.active {
+        transform: scale(1.05);
+
+        &::before {
+          opacity: 0.2;
+          animation:
+            gradientShift 1.5s ease-in-out infinite,
+            pulseGlow 0.6s ease-in-out;
+        }
+
+        :deep(svg path) {
+          fill: #3369f3;
+          transition: all 0.4s ease;
+          filter: drop-shadow(0 0 3px rgba(51, 105, 243, 0.3));
+        }
+      }
+
+      :deep(svg) {
+        position: relative;
+        z-index: 2;
+        transition: all 0.4s ease;
+      }
+
+      :deep(svg path) {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    }
+
     &__input {
       border-radius: 30px;
       width: 849px;
@@ -325,6 +409,30 @@ const getMessageStyle = (message: MessageItem, messages: MessageItem[], index: n
       line-height: 125%;
       color: #1e1e1e;
     }
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(51, 105, 243, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(51, 105, 243, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(51, 105, 243, 0);
   }
 }
 </style>

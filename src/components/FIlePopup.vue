@@ -31,7 +31,7 @@ const handleFile = () => {
   border-radius: 12px;
   width: 162px;
   padding: 15px;
-  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.14);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   background: #fff;
   position: absolute;
   bottom: 64px;
@@ -40,6 +40,9 @@ const handleFile = () => {
   flex-direction: column;
   gap: 16px;
   z-index: 10;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+
   &__button {
     display: flex;
     align-items: center;
@@ -49,11 +52,31 @@ const handleFile = () => {
     font-size: 12px;
     line-height: 117%;
     color: #1e1e1e;
-    transition: background-color 0.2s ease;
-    border-radius: 6px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+
+      transition: left 0.3s ease;
+    }
 
     &:hover {
-      background-color: #f5f5f5;
+      transform: translateX(2px);
+
+      &::before {
+        left: 100%;
+      }
+    }
+
+    &:active {
+      transform: scale(0.98);
     }
   }
 }
