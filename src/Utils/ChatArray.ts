@@ -1,4 +1,4 @@
-// Типы данных
+
 export interface ChatItem {
   id: string | number
   name: string
@@ -7,10 +7,10 @@ export interface ChatItem {
   unreadCount?: number
   isActive?: boolean
   avatar?: string
-  isYourMessage?: boolean // для сообщений "Вы: ..."
+  isYourMessage?: boolean 
 }
 
-// Массив с данными чатов
+
 export const chatList: ChatItem[] = [
   {
     id: 1,

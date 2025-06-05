@@ -1,10 +1,10 @@
-// Типы данных для сообщений
+
 export interface MessageItem {
   id: string | number
   text?: string
   image?: string
   time: string
-  isMy: boolean // true - мое сообщение, false - чужое
+  isMy: boolean 
   type: 'text' | 'image'
 }
 
@@ -13,7 +13,7 @@ export interface ChatDay {
   messages: MessageItem[]
 }
 
-// Массив сообщений для чата
+
 export const messagesData: ChatDay[] = [
   {
     date: '19 июня 2025',

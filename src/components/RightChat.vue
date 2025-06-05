@@ -45,6 +45,7 @@
       </div>
     </div>
     <div class="RightChat-footer">
+      <FIlePopup />
       <button class="RightChat-footer__btn">
         <MessFile width="32" height="32" color="#999999" />
       </button>
@@ -62,6 +63,7 @@ import MenuIcon from '@/assets/Icons/MenuIcon.vue'
 import MessageSendIcon from '@/assets/Icons/MessageSendIcon.vue'
 import MessFile from '@/assets/Icons/MessFile.vue'
 import { messagesData, type MessageItem } from '@/Utils/MessageArray'
+import FIlePopup from './FIlePopup.vue'
 
 interface Props {
   selectedChatId?: string | number | null
@@ -69,7 +71,6 @@ interface Props {
 }
 defineProps<Props>()
 
-// Функция для определения класса сообщения
 const getMessageClass = (message: MessageItem) => {
   if (message.type === 'text' && !message.isMy) {
     return 'RightChat-chat-day-mess-your'
@@ -83,7 +84,6 @@ const getMessageClass = (message: MessageItem) => {
   return ''
 }
 
-// Функция для определения отступов сообщения
 const getMessageStyle = (message: MessageItem, messages: MessageItem[], index: number) => {
   if (index === 0) {
     return { marginTop: '30px' }
@@ -142,6 +142,12 @@ const getMessageStyle = (message: MessageItem, messages: MessageItem[], index: n
       color: #1e1e1e;
     }
     &__menu {
+      width: 25px;
+      height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 100%;
       margin-left: auto;
       margin-right: 0;
     }
@@ -269,6 +275,7 @@ const getMessageStyle = (message: MessageItem, messages: MessageItem[], index: n
     flex-shrink: 0;
     height: 54px;
     width: 929px;
+    position: relative;
     display: flex;
     align-items: center;
     border-top: 1px solid #eaeaea;
